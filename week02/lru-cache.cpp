@@ -1,3 +1,5 @@
+// hash + user-defined list
+
 struct DLinkedNode{
     int key, value;
     DLinkedNode* pre;
@@ -79,6 +81,57 @@ public:
             insertIntoList(cache[key]);
             aSize++;
         }                            
+    }
+};
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache* obj = new LRUCache(capacity);
+ * int param_1 = obj->get(key);
+ * obj->put(key,value);
+ */
+
+// hash + STL list
+
+ class LRUCache {
+private:
+    int capacity;
+    list<pair<int, int>> cache;
+    unordered_map<int, list<pair<int,int>>::iterator> mp;    
+public:
+    LRUCache(int capacity):capacity(capacity) {
+
+    }
+    
+    int get(int key) {
+        if(mp.count(key))
+        {
+            cache.splice(cache.begin(), cache, mp[key]);
+            return cache.begin()->second;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+    
+    void put(int key, int value) {
+        if(mp.count(key))
+        {            
+            cache.splice(cache.begin(), cache, mp[key]);
+            auto it = cache.begin();
+            it->second = value;
+        }
+        else
+        {
+            if(cache.size() == capacity)
+            {
+                mp.erase(cache.back().first);
+                cache.pop_back();
+            }
+            cache.push_front({key,value});
+            mp[key] = cache.begin();                        
+        }
     }
 };
 
